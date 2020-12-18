@@ -2,13 +2,16 @@ pipeline {
     agent {label 'src-builder'}
 
     environment {
+        branch      = "trunk"
+        buildid     = sh(script: "date +'%Y%m%d%H%M%S'", returnStdout: true).trim()
+        prefix      = "/opt/builds/${branch}/amd64/${buildid}"
         src         = "/usr/src"
         xsrc        = "/usr/xsrc"
-        obj         = "/usr/obj"
-        tools       = "/usr/tools"
-        releases    = "${obj}/releasedir/amd64/binary"
-        branch      = "trunk"
-        build_cmd   = "./build.sh -O ${obj} -T ${tools} -X ${xsrc} -x -N0 -j6 "
+        obj         = "${prefix}-obj"
+        tools       = "${prefix}-tools"
+        release     = "${prefix}-release"
+        dest        = "${prefix}-dest"
+        build_cmd   = "./build.sh -B ${buildid} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
     }
 
     stages {
@@ -28,6 +31,7 @@ pipeline {
         stage('Build tools') {
             steps {
                 dir(src){
+                    sh("mkdir -p ${obj} ${tools} ${dest} ${release}")
                     sh("${build_cmd} tools")
                 }
             }
@@ -54,16 +58,15 @@ pipeline {
                 }
             }
         }
-        stage('Publish releases') {
+        stage('Publish release') {
             environment {
                 version = sh(script: "sh ${src}/sys/conf/osrelease.sh", returnStdout: true).trim()
-                machine = sh(script: "uname -m", returnStdout: true).trim()
-                www     = "/var/www/netbsd/${version}/${machine}/binary"
+                www     = "/var/www/netbsd/${version}/amd64/binary"
             }
             steps {
                 sh("mkdir -p ${www}/sets ${www}/kernel")
-                sh("cp ${releases}/sets/* ${www}/sets")
-                sh("cp ${releases}/kernel/* ${www}/kernel")
+                sh("cp ${release}/sets/* ${www}/sets")
+                sh("cp ${release}/kernel/* ${www}/kernel")
             }
         }
     }
