@@ -2,17 +2,19 @@ pipeline {
     agent {label 'src-builder'}
 
     environment {
+        branch      = "netbsd-9"
+        prefix      = "/opt/builds/${branch}/amd64/${BUILD_ID}"
         src         = "/usr/src"
         xsrc        = "/usr/xsrc"
-        obj         = "/usr/obj"
-        tools       = "/usr/tools"
-        releases    = "${obj}/releasedir/amd64/binary"
-        branch      = "netbsd-9"
-        build_cmd   = "./build.sh -O ${obj} -T ${tools} -X ${xsrc} -x -N0 -j6 "
+        obj         = "${prefix}-obj"
+        tools       = "${prefix}-tools"
+        release     = "${prefix}-release"
+        dest        = "${prefix}-dest"
+        build_cmd   = "./build.sh -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
     }
 
     stages {
-        stage('Checkout trunk') {
+        stage('Checkout netbsd-9') {
             steps {
                 script {
                     sources = ["${src}", "${xsrc}"]
@@ -28,6 +30,7 @@ pipeline {
         stage('Build tools') {
             steps {
                 dir(src){
+                    sh("mkdir -p ${obj} ${tools} ${dest} ${release}")
                     sh("${build_cmd} tools")
                 }
             }
@@ -54,16 +57,16 @@ pipeline {
                 }
             }
         }
-        stage('Publish releases') {
+        stage('Publish release') {
             environment {
                 version = sh(script: "sh ${src}/sys/conf/osrelease.sh", returnStdout: true).trim()
-                machine = sh(script: "uname -m", returnStdout: true).trim()
-                www     = "/var/www/netbsd/${version}/${machine}/binary"
+                www     = "/var/www/netbsd/${version}/amd64/binary"
             }
             steps {
                 sh("mkdir -p ${www}/sets ${www}/kernel")
                 sh("cp ${releases}/sets/* ${www}/sets")
                 sh("cp ${releases}/kernel/* ${www}/kernel")
+                sh("rm -fr ${tools} ${obj} ${release} ${dest}")
             }
         }
     }
