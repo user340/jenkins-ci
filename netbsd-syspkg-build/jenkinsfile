@@ -21,8 +21,8 @@ pipeline {
             }
             steps {
                 sh("test -d ${prefix} || mkdir -p ${prefix}")
-                sh("${rsync_cmd} ${remotedir}/src ${src}")
-                sh("${rsync_cmd} ${remotedir}/xsrc ${xsrc}")
+                sh("${rsync_cmd} ${remotedir}/src ${prefix}")
+                sh("${rsync_cmd} ${remotedir}/xsrc ${prefix}")
             }
         }
         stage('Build tools') {
