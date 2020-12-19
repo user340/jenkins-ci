@@ -3,16 +3,14 @@ pipeline {
 
     environment {
         branch      = "trunk"
-        buildid     = """${sh(script: "date +'%Y%m%d%H%M%S'",
-                              returnStdout: true).trim()}"""
-        prefix      = "/opt/builds/${branch}/amd64/${buildid}"
+        prefix      = "/opt/builds/${branch}/amd64/${BUILD_ID}"
         src         = "/usr/src"
         xsrc        = "/usr/xsrc"
         obj         = "${prefix}-obj"
         tools       = "${prefix}-tools"
         release     = "${prefix}-release"
         dest        = "${prefix}-dest"
-        build_cmd   = "./build.sh -m amd64 -B ${buildid} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
+        build_cmd   = "./build.sh -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
     }
 
     stages {
