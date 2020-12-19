@@ -1,0 +1,54 @@
+pipeline {
+    agent {label 'src-builder'}
+
+    environment {
+        prefix      = "/opt/netbsd-dev"
+        src         = "${prefix}/src"
+        xsrc        = "${prefix}/xsrc"
+        bin_prefix  = "${prefix}/${BUILD_ID}"
+        obj         = "${prefix}-obj"
+        tools       = "${prefix}-tools"
+        release     = "${prefix}-release"
+        dest        = "${prefix}-dest"
+        build_cmd   = "./build.sh -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                def rsync_cmd = "rsync -avz"
+                def remotedir = "uki@192.168.1.1:src/cvs.NetBSD.org"
+                sh("test -d ${prefix} || mkdir -p ${prefix}")
+                sh("${rsync_cmd} ${remotedir}/src ${src}")
+                sh("${rsync_cmd} ${remotedir}/xsrc ${xsrc}")
+            }
+        }
+        stage('Build tools') {
+            steps {
+                dir(src){
+                    sh("mkdir -p ${obj} ${tools} ${dest} ${release}")
+                    sh("${build_cmd} tools")
+                }
+            }
+        }
+        stage('Build distribution') {
+            steps {
+                dir(src) {
+                    sh("${build_cmd} distribution")
+                }
+            }
+        }
+        stage('Build syspkgs') {
+            steps {
+                dir(src) {
+                    sh("${build_cmd} syspkgs")
+                }
+            }
+        }
+        post {
+            success {
+                sh("rm -fr ${obj} ${tools}")
+            }
+        }
+    }
+}
