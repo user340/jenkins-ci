@@ -15,10 +15,11 @@ pipeline {
 
     stages {
         stage('Checkout') {
+            environment {
+                rsync_cmd = "rsync -avz"
+                remotedir = "uki@192.168.1.1:src/cvs.NetBSD.org"
+            }
             steps {
-                def rsync_cmd = "rsync -avz"
-                def remotedir = "uki@192.168.1.1:src/cvs.NetBSD.org"
-
                 sh("test -d ${prefix} || mkdir -p ${prefix}")
                 sh("${rsync_cmd} ${remotedir}/src ${src}")
                 sh("${rsync_cmd} ${remotedir}/xsrc ${xsrc}")
