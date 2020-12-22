@@ -1,0 +1,42 @@
+pipeline {
+    agent {label "pkgsrc-builder"}
+
+    parameters {
+        string(name: "branch", defaultValue: "trunk", description: "Git branch")
+        string(name: "package", description: "Package name (ex. www/firefox)")
+    }
+
+    envionment {
+        pkgsrc  = "/usr/pkgsrc"
+        target  = "${pkgsrc}/${package}"
+        prefix  = "/usr/pkg"
+        www     = "/var/www/pkgsrc/packages/$(uname)/$(uname -p)/$(uname -r)/All"
+        PATH    = "${prefix}/sbin:${prefix}/bin:$PATH"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                dir(pkgsrc) {
+                    sh("git checkout ${branch}")
+                    sh("git pull")
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                dir(target) {
+                    sh("make package clean clean-depends")
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            sh("test -d ${www} || mkdir ${www}")
+            sh("rsync -a ${pkgsrc}/packages/All/ ${www}/")
+            sh("pkg_info -X ${www}/*.tgz | gzip -9 > ${www}/pkg_summary.gz")
+        }
+    }
+}
