@@ -10,7 +10,10 @@ pipeline {
         pkgsrc  = "/usr/pkgsrc"
         target  = "${pkgsrc}/${params.package}"
         prefix  = "/usr/pkg"
-        www     = "/var/www/pkgsrc/packages/$(uname)/$(uname -p)/$(uname -r)/All"
+        os      = sh(script: "uname", returnStdout: true).trim()
+        cpu     = sh(script: "uname -p", returnStdout: true).trim()
+        release = sh(script: "uname -r", returnStdout: true).trim()
+        www     = "/var/www/pkgsrc/packages/${os}/${cpu}/${release}/All"
         PATH    = "${prefix}/sbin:${prefix}/bin:$PATH"
     }
 
