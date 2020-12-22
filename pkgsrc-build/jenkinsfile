@@ -8,7 +8,7 @@ pipeline {
 
     envionment {
         pkgsrc  = "/usr/pkgsrc"
-        target  = "${pkgsrc}/${package}"
+        target  = "${pkgsrc}/${params.package}"
         prefix  = "/usr/pkg"
         www     = "/var/www/pkgsrc/packages/$(uname)/$(uname -p)/$(uname -r)/All"
         PATH    = "${prefix}/sbin:${prefix}/bin:$PATH"
@@ -18,7 +18,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir(pkgsrc) {
-                    sh("git checkout ${branch}")
+                    sh("git checkout ${params.branch}")
                     sh("git pull")
                 }
             }
