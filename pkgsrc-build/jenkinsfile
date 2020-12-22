@@ -6,7 +6,7 @@ pipeline {
         string(name: "package", description: "Package name (ex. www/firefox)")
     }
 
-    envionment {
+    environment {
         pkgsrc  = "/usr/pkgsrc"
         target  = "${pkgsrc}/${params.package}"
         prefix  = "/usr/pkg"
