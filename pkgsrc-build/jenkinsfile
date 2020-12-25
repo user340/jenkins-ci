@@ -37,7 +37,7 @@ pipeline {
 
     post {
         success {
-            sh("test -d ${www} || mkdir ${www}")
+            sh("test -d ${www} || mkdir -p ${www}")
             sh("rsync -a ${pkgsrc}/packages/All/ ${www}/")
             sh("pkg_info -X ${www}/*.tgz | gzip -9 > ${www}/pkg_summary.gz")
         }
