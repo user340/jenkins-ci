@@ -2,10 +2,10 @@ pipeline {
     agent {label 'src-builder'}
 
     environment {
-        prefix      = "/opt/netbsd-dev"
-        src         = "${prefix}/src"
-        xsrc        = "${prefix}/xsrc"
-        bin_prefix  = "${prefix}/${BUILD_ID}"
+        root        = "/opt/netbsd-dev"
+        src         = "${root}/src"
+        xsrc        = "${root}/xsrc"
+        prefix      = "${root}/${BUILD_ID}"
         obj         = "${prefix}-obj"
         tools       = "${prefix}-tools"
         release     = "${prefix}-release"
