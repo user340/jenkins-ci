@@ -20,9 +20,9 @@ pipeline {
                 remotedir = "uki@192.168.1.1:src/cvs.NetBSD.org"
             }
             steps {
-                sh("test -d ${prefix} || mkdir -p ${prefix}")
-                sh("${rsync_cmd} ${remotedir}/src ${prefix}")
-                sh("${rsync_cmd} ${remotedir}/xsrc ${prefix}")
+                sh("test -d ${prefix} || mkdir -p ${root}")
+                sh("${rsync_cmd} ${remotedir}/src ${root}")
+                sh("${rsync_cmd} ${remotedir}/xsrc ${root}")
             }
         }
         stage('Build tools') {
