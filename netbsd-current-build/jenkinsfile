@@ -59,7 +59,7 @@ pipeline {
         }
         stage('Save release') {
             steps {
-                sh("rsync -avz ${release}/amd64/ uki@192.168.1.1:/zshare/netbsd-build/")
+                sh("rsync -avz ${release}/amd64 uki@192.168.1.1:/zshare/netbsd-build/")
                 sh("rm -fr ${tools} ${obj} ${release} ${dest}")
             }
         }
