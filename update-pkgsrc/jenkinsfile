@@ -1,10 +1,4 @@
 pipeline {
-  agent { label params.NODE }
-
-  parameters {
-    string(name: "NODE", defaultValue: 'builder')
-  }
-
   environment {
     PKGSRC_DIR   = "/usr/pkgsrc"
     PKGSRC_WIP_DIR = "${PKGSRC_DIR}/wip"
