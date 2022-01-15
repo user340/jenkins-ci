@@ -10,7 +10,7 @@ pipeline {
             build(job: 'update-pkgsrc')
           }
         }
-        stage('builder') {
+        stage('jenkins') {
           agent {
             label 'Jenkins'
           }
@@ -18,7 +18,7 @@ pipeline {
             build(job: 'update-pkgsrc')
           }
         }
-        stage('builder') {
+        stage('zabbix') {
           agent {
             label 'Zabbix'
           }
