@@ -1,7 +1,7 @@
 pipeline {
   stages {
     stage('Update pkgsrc in all hosts') {
-      parallel(
+      parallel {
         stage('builder') {
           agent {
             label 'src-builder'
@@ -26,7 +26,7 @@ pipeline {
             build(job: 'update-pkgsrc')
           }
         }
-      )
+      }
     }
   }
 }
