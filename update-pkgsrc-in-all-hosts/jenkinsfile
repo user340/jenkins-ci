@@ -5,27 +5,18 @@ pipeline {
     stage('Update pkgsrc in all hosts') {
       parallel {
         stage('builder') {
-          agent {
-            label 'src-builder'
-          }
           steps {
-            build(job: 'update-pkgsrc')
+            build(job: 'update-pkgsrc', parameters: [string(name: 'NODE', value: 'src-builder')])
           }
         }
         stage('jenkins') {
-          agent {
-            label 'Jenkins'
-          }
           steps {
-            build(job: 'update-pkgsrc')
+            build(job: 'update-pkgsrc', parameters: [string(name: 'NODE', value: 'Jenkins')])
           }
         }
         stage('zabbix') {
-          agent {
-            label 'Zabbix'
-          }
           steps {
-            build(job: 'update-pkgsrc')
+            build(job: 'update-pkgsrc', parameters: [string(name: 'NODE', value: 'Zabbix')])
           }
         }
       }
