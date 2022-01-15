@@ -1,0 +1,20 @@
+pipeline {
+  stages {
+    stage('Update pkgsrc in all hosts') {
+      parallel {
+        'builder': {
+          build(job: 'update-pkgsrc',
+                parameters: [string(name: 'NODE', value: 'src-builder')])
+        },
+        'jenkins': {
+          build(job: 'update-pkgsrc',
+                parameters: [string(name: 'NODE', value: 'Jenkins')])
+        },
+        'zabbix': {
+          build(job: 'update-pkgsrc',
+                parameters: [string(name: 'NODE', value: 'Zabbix')])
+        }
+      }
+    }
+  }
+}

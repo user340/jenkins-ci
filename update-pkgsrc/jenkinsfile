@@ -1,0 +1,33 @@
+pipeline {
+  agent { label params.NODE }
+
+  parameters {
+    string(name: "NODE", defaultValue: 'builder')
+  }
+
+  environment {
+    PKGSRC_DIR   = "/usr/pkgsrc"
+    PKGSRC_WIP_DIR = "${PKGSRC_DIR}/wip"
+  }
+
+  stages {
+    stage('Update pkgsrc') {
+      steps {
+        script {
+          dir(PKGSRC_DIR) {
+            sh(script: "git pull")
+          }
+        }
+      }
+    }
+    stage('Update pkgsrc-wip') {
+      steps {
+        script {
+          dir(PKGSRC_WIP_DIR) {
+            sh(script: "git pull")
+          }
+        }
+      }
+    }
+  }
+}
