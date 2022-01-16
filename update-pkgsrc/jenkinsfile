@@ -6,22 +6,24 @@ pipeline {
   }
 
   environment {
-    PKGSRC_DIR   = "/usr/pkgsrc"
+    PKGSRC_DIR     = "/usr/pkgsrc"
     PKGSRC_WIP_DIR = "${PKGSRC_DIR}/wip"
+    GIT_CMD        = "/usr/pkg/bin/git"
+    GIT_PULL       = "${GIT_CMD} pull"
   }
 
   stages {
     stage('Update pkgsrc') {
       steps {
         script {
-          sh(script: "cd ${PKGSRC_DIR} && git pull")
+          sh(script: "cd ${PKGSRC_DIR} && ${GIT_PULL}")
         }
       }
     }
     stage('Update pkgsrc-wip') {
       steps {
         script {
-          sh(script: "cd ${PKGSRC_WIP_DIR} && git pull")
+          sh(script: "cd ${PKGSRC_WIP_DIR} && ${GIT_PULL}")
         }
       }
     }
