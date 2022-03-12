@@ -48,9 +48,4 @@ pipeline {
             }
         }
     }
-    post {
-        success {
-            sh("rm -fr ${obj} ${tools}")
-        }
-    }
 }
