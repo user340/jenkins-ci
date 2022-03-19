@@ -10,7 +10,7 @@ pipeline {
         tools       = "${prefix}-tools"
         release     = "${prefix}-release"
         dest        = "${prefix}-dest"
-        build_cmd   = "./build.sh -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
+        build_cmd   = "./build.sh -U -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
     }
 
     stages {
