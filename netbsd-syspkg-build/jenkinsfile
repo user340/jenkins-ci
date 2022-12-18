@@ -1,28 +1,37 @@
 pipeline {
     agent {label 'src-builder'}
 
+    parameters {
+        booleanParam(name: 'DEV_TOGGLE', defaultValue: false, description: 'Build dev version')
+    }
+
     environment {
-        root        = "/opt/netbsd-dev"
-        src         = "${root}/src"
-        xsrc        = "${root}/xsrc"
-        prefix      = "${root}/${BUILD_ID}"
-        obj         = "${prefix}-obj"
-        tools       = "${prefix}-tools"
-        release     = "${prefix}-release"
-        dest        = "${prefix}-dest"
-        build_cmd   = "./build.sh -U -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
+        root           = "/opt/netbsd-dev"
+        src            = "${root}/src"
+        xsrc           = "${root}/xsrc"
+        prefix         = "${root}/${BUILD_ID}"
+        obj            = "${prefix}-obj"
+        tools          = "${prefix}-tools"
+        release        = "${prefix}-release"
+        dest           = "${prefix}-dest"
+        build_cmd      = "./build.sh -U -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
+        rsync_cmd      = "rsync -avz"
+        remote_dir     = "uki@192.168.1.1:src/cvs.NetBSD.org"
+        remote_dev_dir = "uki@192.168.1.1:src/github.com/user340"
     }
 
     stages {
         stage('Checkout') {
-            environment {
-                rsync_cmd = "rsync -avz"
-                remotedir = "uki@192.168.1.1:src/cvs.NetBSD.org"
-            }
             steps {
-                sh("test -d ${prefix} || mkdir -p ${root}")
-                sh("${rsync_cmd} ${remotedir}/src ${root}")
-                sh("${rsync_cmd} ${remotedir}/xsrc ${root}")
+                script {
+                    sh("test -d ${prefix} || mkdir -p ${root}")
+                    if (params.DEV_TOGGLE) {
+                        sh("${rsync_cmd} ${remote_dev_dir}/src ${root}")
+                    } else {
+                        sh("${rsync_cmd} ${remote_dir}/src ${root}")
+                    }
+                    sh("${rsync_cmd} ${remote_dir}/xsrc ${root}")
+                }
             }
         }
         stage('Build tools') {
