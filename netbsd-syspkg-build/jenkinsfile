@@ -27,10 +27,11 @@ pipeline {
                     sh("test -d ${prefix} || mkdir -p ${root}")
                     if (params.DEV_TOGGLE) {
                         sh("${rsync_cmd} ${remote_dev_dir}/src ${root}")
+                        sh("${rsync_cmd} ${remote_dev_dir}/xsrc ${root}")
                     } else {
                         sh("${rsync_cmd} ${remote_dir}/src ${root}")
+                        sh("${rsync_cmd} ${remote_dir}/xsrc ${root}")
                     }
-                    sh("${rsync_cmd} ${remote_dir}/xsrc ${root}")
                 }
             }
         }
