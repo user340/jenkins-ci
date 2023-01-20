@@ -16,8 +16,10 @@ pipeline {
         dest           = "${prefix}-dest"
         build_cmd      = "./build.sh -U -m amd64 -B ${BUILD_ID} -D ${dest} -M ${obj} -R ${release} -T ${tools} -X ${xsrc} -x -N0 -j6 -V NETBSD_OFFICIAL_RELEASE=no -V BUILD=yes"
         rsync_cmd      = "rsync -avz --delete"
-        remote_dir     = "uki@192.168.1.1:src/cvs.NetBSD.org"
-        remote_dev_dir = "uki@192.168.1.1:src/github.com/user340"
+        src_host       = "192.168.1.1"
+        src_host_user  = "uki"
+        remote_dir     = "${src_host_user}@${src_host}:src/cvs.NetBSD.org"
+        remote_dev_dir = "${src_host_user}@${src_host}:src/github.com/user340"
     }
 
     stages {
